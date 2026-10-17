@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-     "start": "node index.js",
+    "start": "node index.js",
     "dev": "nodemon index.js"
   },
   "author": "slrtech",
@@ -14,12 +14,14 @@
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
+    "dotenv": "^16.6.1",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.20.0",
     "mongoose": "^8.12.1",
     "nodemon": "^3.1.9",
     "simple-peer": "^9.11.1",
-    "socket.io": "^4.8.1"
+    "socket.io": "^4.8.1",
+    "uuid": "^13.0.0"
   }
 }

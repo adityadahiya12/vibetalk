@@ -1,32 +1,33 @@
-// src/utils/axios.js
 import axios from 'axios';
 
-// Create an instance of Axios
+const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
-  withCredentials: true, // This ensures cookies are sent with requests
+  baseURL,
+  withCredentials: true,
 });
 
-// Optionally, you can add request and response interceptors
 apiClient.interceptors.request.use(
   (config) => {
-    // You can add authorization headers or other configurations here
-    // config.headers['Authorization'] = `Bearer ${yourToken}`;
+    try {
+      const stored = localStorage.getItem('userData');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed?.token) {
+          config.headers.Authorization = `Bearer ${parsed.token}`;
+        }
+      }
+    } catch {
+      // Ignore parse error
+    }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 apiClient.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    // Handle errors globally here
-    return Promise.reject(error);
-  }
+  (response) => response,
+  (error) => Promise.reject(error)
 );
 
 export default apiClient;

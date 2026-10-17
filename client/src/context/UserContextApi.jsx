@@ -3,39 +3,50 @@ import { createContext, useContext, useEffect, useState } from "react";
 // Create the context
 const UserContext = createContext();
 
-// Provider component to wrap around your app
-export const UserProvider = ({ children }) => {
-    // Initialize state with localStorage data to prevent flickering issues
-    const [user, setUser] = useState(() => {
+const getInitialUser = () => {
+    try {
         const storedUser = localStorage.getItem("userData");
         return storedUser ? JSON.parse(storedUser) : null;
-    });
+    } catch {
+        return null;
+    }
+};
+
+// Provider component to wrap around your app
+export const UserProvider = ({ children }) => {
+    const [user, setUser] = useState(getInitialUser);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        setLoading(true);
-        const storedUser = localStorage.getItem("userData");
-        console.log("Fetched user from localStorage:", storedUser);
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
+        try {
+            const storedUser = localStorage.getItem("userData");
+            if (storedUser) {
+                setUser(JSON.parse(storedUser));
+            }
+        } catch (e) {
+            console.error("Error reading stored user:", e);
         }
-        setLoading(false);
     }, []);
 
     // Function to update user data
     const updateUser = (newUserData) => {
         setUser(newUserData);
-        localStorage.setItem("userData", JSON.stringify(newUserData));
+        if (newUserData) {
+            localStorage.setItem("userData", JSON.stringify(newUserData));
+        } else {
+            localStorage.removeItem("userData");
+        }
     };
 
     return (
-        <UserContext.Provider value={{ user, updateUser ,loading }}>
+        <UserContext.Provider value={{ user, updateUser, loading, setLoading }}>
             {children}
         </UserContext.Provider>
     );
 };
 
 // Custom hook for consuming the context
+// eslint-disable-next-line react-refresh/only-export-components
 export const useUser = () => {
     const context = useContext(UserContext);
     if (!context) {
